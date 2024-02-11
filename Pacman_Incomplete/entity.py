@@ -7,7 +7,7 @@ from random import randint
 class Entity(object):
     def __init__(self, node):
         self.name = None
-        self.directions = {UP:Vector2(0, -1),DOWN:Vector2(0, 1), 
+        self.directions = {UP:Vector2(0, -1), DOWN:Vector2(0, 1), 
                           LEFT:Vector2(-1, 0), RIGHT:Vector2(1, 0), STOP:Vector2()}
         self.direction = STOP
         self.setSpeed(100)
@@ -100,9 +100,11 @@ class Entity(object):
     def goalDirection(self, directions):
         distances = []
         print('----------------')
-        print('goalDirection')
+        print(f'goalDirection{directions}')
         for direction in directions:
+            print(f'position:{self.node.position}')
             vec = self.node.position  + self.directions[direction]*TILEWIDTH - self.goal
+            print(f'append{vec}')
             distances.append(vec.magnitudeSquared())
         print(f'distances:{distances}')
         print(f'min:{min(distances)}')
