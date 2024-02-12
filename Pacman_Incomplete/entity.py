@@ -99,16 +99,20 @@ class Entity(object):
 
     def goalDirection(self, directions):
         distances = []
-        print('----------------')
-        print(f'goalDirection{directions}')
+        # print('----------------')
         for direction in directions:
-            print(f'position:{self.node.position}')
+            # print(f'direction:{direction}')
+            # print(f'position:{self.node.position}')
+            # print(f'goal:{self.goal}')
             vec = self.node.position  + self.directions[direction]*TILEWIDTH - self.goal
-            print(f'append{vec}')
+            # print(f'append{vec}')
             distances.append(vec.magnitudeSquared())
-        print(f'distances:{distances}')
-        print(f'min:{min(distances)}')
+        # print(f'distances:{distances}')
+        # print(f'min:{min(distances)}')
         index = distances.index(min(distances))
-        print(f'index:{index}')
+        # print(f'index:{index}')
 
         return directions[index]
+    
+    def setGoal(self, node):
+        self.goal=Vector2(node.position.x, node.position.y)

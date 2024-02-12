@@ -20,10 +20,12 @@ class GameController(object):
         self.setBackground()
         self.nodes = NodeGroup('maze1.txt')
         self.pacman = Pacman(self.nodes.getStartTempNode())
-        self.ghost = Ghost(self.nodes.getStartTempNode())
+        self.ghost = Ghost(self.nodes.getLastTempNode())
 
     def update(self):
         dt = self.clock.tick(30) / 1000.0
+        self.ghost.setGoal(self.pacman.node)
+        self.pacman.setGoal(self.ghost.node)
         self.pacman.update(dt)
         self.ghost.update(dt)
         self.checkEvents()

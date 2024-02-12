@@ -26,6 +26,8 @@ class NodeGroup(object):
         self.createNodeTable(data)
         self.connectHorizontally(data)
         self.connectVertically(data)
+        # for node in self.nodesLUT:
+        #     print(f"NODES:{node}\n")
 
     def render(self, screen):
         for node in self.nodesLUT.values():
@@ -89,3 +91,8 @@ class NodeGroup(object):
     def getStartTempNode(self):
         nodes = list(self.nodesLUT.values())
         return nodes[0]
+    
+    def getLastTempNode(self):
+        nodes = list(self.nodesLUT.values())
+        return nodes[-1]
+    
