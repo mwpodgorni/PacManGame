@@ -110,7 +110,15 @@ class Entity(object):
 
     # EXERCISE 2
     def wanderBiased(self, directions):
-        return
+        if self.direction in directions:
+            nextDirProb = randint(1,100)
+            if nextDirProb<=50:
+                return self.direction
+            else:
+                directions.remove(self.direction)
+                return directions[randint(0,len(directions)-1)]
+        else:
+            return self.wanderRandom(directions)
 
     # EXERCISE 3
     def FSMstateChecker():

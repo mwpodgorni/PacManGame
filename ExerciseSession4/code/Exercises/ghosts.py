@@ -12,7 +12,7 @@ class Ghost(Entity):
         self.name = GHOST
         self.points = 200
         self.goal = Vector2()
-        self.directionMethod = self.wanderRandom
+        self.directionMethod = self.wanderBiased
         self.pacman = pacman
         self.nodes = nodes
         self.speed = 80
