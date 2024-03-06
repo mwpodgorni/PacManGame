@@ -28,7 +28,7 @@ class Pacman(Entity):
     def update(self, dt):
         self.goal = self.ghost.position
         self.position += self.directions[self.direction]*self.speed*dt
-         
+
         if self.overshotTarget():
             self.node = self.target
             directions = self.validDirections()
@@ -42,7 +42,7 @@ class Pacman(Entity):
             self.setPosition()
 
     #############
-    # Executes Dijkstra from Ghost's previous node as start 
+    # Executes Dijkstra from Ghost's previous node as start
     # to pacman's target node as target.
     def getDijkstraPath(self, directions):
         lastGhostNode = self.ghost.target
@@ -84,7 +84,7 @@ class Pacman(Entity):
             print(directions)
             if -1 * self.ghost.direction in directions:
                 return -1 * self.ghost.direction
-            else: 
+            else:
                 return choice(directions)
-        
+
         # up 1, down -1, left 2, right -2

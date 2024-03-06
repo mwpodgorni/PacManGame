@@ -4,7 +4,7 @@ from vector import Vector2
 from constants import *
 from entity import Entity
 from algorithms import dijkstra, print_result, dijkstra_or_a_star
-from random import choice 
+from random import choice
 
 class Ghost(Entity):
     def __init__(self, node, nodes, pacman=None):
@@ -12,17 +12,17 @@ class Ghost(Entity):
         self.name = GHOST
         self.points = 200
         self.goal = Vector2()
-        self.directionMethod = self.randomDirection
+        self.directionMethod = self.wanderRandom
         self.pacman = pacman
         self.nodes = nodes
         self.speed = 80
-    
+
     def update(self, dt):
         self.goal = self.pacman.position
         Entity.update(self, dt)
 
     #############
-    # Executes Dijkstra from Ghost's previous node as start 
+    # Executes Dijkstra from Ghost's previous node as start
     # to pacman's target node as target.
     def getDijkstraPath(self, directions):
         lastPacmanNode = self.pacman.target
@@ -64,9 +64,9 @@ class Ghost(Entity):
             print(directions)
             if -1 * self.pacman.direction in directions:
                 return -1 * self.pacman.direction
-            else: 
+            else:
                 return choice(directions)
-        
+
         # up 1, down -1, left 2, right -2
 
 

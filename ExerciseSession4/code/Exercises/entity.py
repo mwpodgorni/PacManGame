@@ -7,7 +7,7 @@ from random import randint, choice
 class Entity(object):
     def __init__(self, node):
         self.name = None
-        self.directions = {UP:Vector2(0, -1),DOWN:Vector2(0, 1), 
+        self.directions = {UP:Vector2(0, -1),DOWN:Vector2(0, 1),
                           LEFT:Vector2(-1, 0), RIGHT:Vector2(1, 0), STOP:Vector2()}
         self.direction = STOP
         self.setSpeed(100)
@@ -24,7 +24,7 @@ class Entity(object):
 
     def setPosition(self):
         self.position = self.node.position.copy()
-          
+
     def validDirection(self, direction):
         if direction is not STOP:
             if self.node.neighbors[direction] is not None:
@@ -50,7 +50,7 @@ class Entity(object):
         temp = self.node
         self.node = self.target
         self.target = temp
-        
+
     def oppositeDirection(self, direction):
         if direction is not STOP:
             if direction == self.direction * -1:
@@ -76,7 +76,7 @@ class Entity(object):
 
     def update(self, dt):
         self.position += self.directions[self.direction]*self.speed*dt
-         
+
         if self.overshotTarget():
             self.node = self.target
             directions = self.validDirections()
@@ -88,7 +88,7 @@ class Entity(object):
                 self.target = self.getNewTarget(self.direction)
 
             self.setPosition()
-        
+
     def validDirections(self):
         directions = []
         for key in [UP, DOWN, LEFT, RIGHT]:
@@ -106,7 +106,7 @@ class Entity(object):
     # EXERCISE 1
     def wanderRandom(self, directions):
         # To be implemented
-        return 
+        return self.randomDirection(directions)
 
     # EXERCISE 2
     def wanderBiased(self, directions):
@@ -114,4 +114,4 @@ class Entity(object):
 
     # EXERCISE 3
     def FSMstateChecker():
-        return 
+        return
