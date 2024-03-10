@@ -87,7 +87,7 @@ class Entity(object):
             pygame.draw.circle(screen, self.color, p, self.radius)
 
     def update(self, dt):
-        self.FSM_decision() ########## <========
+        # self.FSM_decision() ########## <========
         self.position += self.directions[self.direction]*self.speed*dt
          
         if self.overshotTarget():
