@@ -55,6 +55,8 @@ def heuristic(node1, node2):
 
 
 def dijkstra_or_a_star(nodes, start_node, a_star=False):
+    print(f'1:{nodes.getListOfNodesVector()}')
+    print(f'2:{start_node}')
     unvisited_nodes = list(nodes.costs)
     shortest_path = {}
     previous_nodes = {}

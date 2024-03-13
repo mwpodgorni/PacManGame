@@ -2,7 +2,7 @@ import pygame
 from vector import Vector2
 from constants import *
 import numpy as np
-
+import math
 class Node(object):
     def __init__(self, x, y):
         self.position = Vector2(x, y)
@@ -40,6 +40,7 @@ class NodeGroup(object):
         self.connectHorizontally(data)
         self.connectVertically(data)
         self.homekey = None
+        self.costs = self.get_nodes()
 
     def readMazeFile(self, textfile):
         return np.loadtxt(textfile, dtype='<U1')
@@ -162,3 +163,69 @@ class NodeGroup(object):
     def render(self, screen):
         for node in self.nodesLUT.values():
             node.render(screen)
+
+# -----------------------------------------------------------------------
+    # returns a list of all nodes in (x,y) format
+    def getListOfNodesVector(self):
+        return list(self.nodesLUT)
+     # returns a node in (x,y) format
+    def getVectorFromLUTNode(self, node):
+        # print(f'getVectorFromLUTNode: {node}')
+        id = list(self.nodesLUT.values()).index(node)
+        listOfVectors = self.getListOfNodesVector()
+        return listOfVectors[id]
+          
+    # returns neighbors of a node in LUT form
+    def getNeighborsObj(self, node):
+        node_obj = self.getNodeFromPixels(node[0], node[1])
+        return node_obj.neighbors
+
+    # returns neighbors in (x,y) format
+    def getNeighbors(self, node):
+        neighs_LUT = self.getNeighborsObj(node)
+        vals = neighs_LUT.values()
+        neighs_LUT2 = []
+        for direction in vals:
+            if not direction is None:
+                neighs_LUT2.append(direction)
+        list_neighs = []
+        for neigh in neighs_LUT2:
+            list_neighs.append(self.getVectorFromLUTNode(neigh))
+        return list_neighs
+
+    # used to initialize node system for Dijkstra algorithm
+    def get_nodes(self):
+        costs_dict = {}
+        listOfNodesPixels = self.getListOfNodesVector()
+        for node in listOfNodesPixels:
+            neigh = self.getNeighborsObj(node)
+            temp_neighs = neigh.values()
+            temp_list = []
+            for direction in temp_neighs:
+                if not direction is None:
+                    temp_list.append(1)
+                else:
+                    temp_list.append(None)
+            costs_dict[node] = temp_list
+        return costs_dict
+    
+    def getNearestNode(self, position):
+        print(f'getNearestNode:{position}')
+        min_distance = float('inf')
+        nearest_node = None
+        
+        # Convert position to tuple if it's a Vector2 object
+        if isinstance(position, Vector2):
+            position = (position.x, position.y)
+        
+        # Iterate through all nodes in the node group
+        for node_position in self.nodesLUT.keys():
+            # Calculate the distance between the current node and the given position
+            distance = math.sqrt((position[0] - node_position[0])**2 + (position[1] - node_position[1])**2)
+            
+            # Update the nearest node if this node is closer
+            if distance < min_distance:
+                min_distance = distance
+                nearest_node = self.nodesLUT[node_position]
+        
+        return nearest_node

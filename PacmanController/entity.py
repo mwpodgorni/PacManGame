@@ -3,14 +3,14 @@ from pygame.locals import *
 from vector import Vector2
 from constants import *
 from random import randint
-
+import math
 class Entity(object):
     def __init__(self, node):
         self.name = None
         self.directions = {UP:Vector2(0, -1),DOWN:Vector2(0, 1), 
                           LEFT:Vector2(-1, 0), RIGHT:Vector2(1, 0), STOP:Vector2()}
         self.direction = STOP
-        self.setSpeed(100)
+        self.setSpeed(8)
         self.radius = 10
         self.collideRadius = 5
         self.color = WHITE
@@ -26,7 +26,7 @@ class Entity(object):
 
     def update(self, dt):
         self.position += self.directions[self.direction]*self.speed*dt
-         
+        print("Entity update")
         if self.overshotTarget():
             self.node = self.target
             directions = self.validDirections()
@@ -58,8 +58,13 @@ class Entity(object):
         if self.target is not None:
             vec1 = self.target.position - self.node.position
             vec2 = self.position - self.node.position
+            # round up to the nearest integer
+            vec2_rounded = Vector2(
+                math.ceil(vec2.x) if vec2.x >= 0 else math.floor(vec2.x),
+                math.ceil(vec2.y) if vec2.y >= 0 else math.floor(vec2.y)
+            )
             node2Target = vec1.magnitudeSquared()
-            node2Self = vec2.magnitudeSquared()
+            node2Self = vec2_rounded.magnitudeSquared()
             return node2Self >= node2Target
         return False
 
