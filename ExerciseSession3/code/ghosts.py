@@ -29,9 +29,11 @@ class Ghost(Entity):
         lastPacmanNode = self.nodes.getVectorFromLUTNode(lastPacmanNode)
         ghostTarget = self.target
         ghostTarget = self.nodes.getVectorFromLUTNode(ghostTarget)
-
+        # print(f'target:{ghostTarget}')
+        # for node in self.nodes.getListOfNodesVector():
+        #     print(f'pos: {node}')
         # previous_nodes, shortest_path = dijkstra(self.nodes, ghostTarget)
-        previous_nodes, shortest_path = dijkstra_or_a_star(self.nodes, ghostTarget, a_star=False)
+        previous_nodes, shortest_path = dijkstra_or_a_star(self.nodes, ghostTarget, a_star=True)
         path = []
         node = lastPacmanNode
         while node != ghostTarget:
@@ -46,7 +48,7 @@ class Ghost(Entity):
     # returned path
     def goalDirectionDij(self, directions):
         path = self.getDijkstraPath(directions)
-        print(path)
+        # print(path)
         ghostTarget = self.target
         ghostTarget = self.nodes.getVectorFromLUTNode(ghostTarget)
         path.append(ghostTarget)
@@ -66,7 +68,6 @@ class Ghost(Entity):
                 return -1 * self.pacman.direction
             else: 
                 return choice(directions)
-        
         # up 1, down -1, left 2, right -2
 
 

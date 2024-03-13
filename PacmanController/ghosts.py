@@ -24,13 +24,14 @@ class Ghost(Entity):
         self.directionMethod = self.goalDirection
 
     def update(self, dt):
-        self.sprites.update(dt)
-        self.mode.update(dt)
-        if self.mode.current is SCATTER:
-            self.scatter()
-        elif self.mode.current is CHASE:
-            self.chase()
-        Entity.update(self, dt)
+        return
+        # self.sprites.update(dt)
+        # self.mode.update(dt)
+        # if self.mode.current is SCATTER:
+        #     self.scatter()
+        # elif self.mode.current is CHASE:
+        #     self.chase()
+        # Entity.update(self, dt)
 
     def scatter(self):
         self.goal = Vector2()
