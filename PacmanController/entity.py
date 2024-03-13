@@ -7,10 +7,10 @@ from random import randint
 class Entity(object):
     def __init__(self, node):
         self.name = None
-        self.directions = {UP:Vector2(0, -1),DOWN:Vector2(0, 1), 
+        self.directions = {UP:Vector2(0, -1),DOWN:Vector2(0, 1),
                           LEFT:Vector2(-1, 0), RIGHT:Vector2(1, 0), STOP:Vector2()}
         self.direction = STOP
-        self.setSpeed(100)
+        self.setSpeed(4)
         self.radius = 10
         self.collideRadius = 5
         self.color = WHITE
@@ -26,14 +26,13 @@ class Entity(object):
 
     def update(self, dt):
         self.position += self.directions[self.direction]*self.speed*dt
-         
+
         if self.overshotTarget():
             self.node = self.target
             directions = self.validDirections()
+            print('valid directions:', directions)
             direction = self.directionMethod(directions)
-            if not self.disablePortal:
-                if self.node.neighbors[PORTAL] is not None:
-                    self.node = self.node.neighbors[PORTAL]
+            print('direction:', direction)
             self.target = self.getNewTarget(direction)
             if self.target is not self.node:
                 self.direction = direction
@@ -41,7 +40,7 @@ class Entity(object):
                 self.target = self.getNewTarget(self.direction)
 
             self.setPosition()
-          
+
     def validDirection(self, direction):
         if direction is not STOP:
             if self.name in self.node.access[direction]:
@@ -68,7 +67,7 @@ class Entity(object):
         temp = self.node
         self.node = self.target
         self.target = temp
-        
+
     def oppositeDirection(self, direction):
         if direction is not STOP:
             if direction == self.direction * -1:

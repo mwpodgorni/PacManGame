@@ -16,13 +16,13 @@ class Ghost(Entity):
         self.pacman = pacman
         self.nodes = nodes
         self.speed = 80
-    
+
     def update(self, dt):
         self.goal = self.pacman.position
         Entity.update(self, dt)
 
     #############
-    # Executes Dijkstra from Ghost's previous node as start 
+    # Executes Dijkstra from Ghost's previous node as start
     # to pacman's target node as target.
     def getDijkstraPath(self, directions):
         lastPacmanNode = self.pacman.target
@@ -31,7 +31,7 @@ class Ghost(Entity):
         ghostTarget = self.nodes.getVectorFromLUTNode(ghostTarget)
 
         # previous_nodes, shortest_path = dijkstra(self.nodes, ghostTarget)
-        previous_nodes, shortest_path = dijkstra_or_a_star(self.nodes, ghostTarget, a_star=False)
+        previous_nodes, shortest_path = dijkstra_or_a_star(self.nodes, ghostTarget, a_star=True)
         path = []
         node = lastPacmanNode
         while node != ghostTarget:
@@ -64,9 +64,9 @@ class Ghost(Entity):
             print(directions)
             if -1 * self.pacman.direction in directions:
                 return -1 * self.pacman.direction
-            else: 
+            else:
                 return choice(directions)
-        
+
         # up 1, down -1, left 2, right -2
 
 

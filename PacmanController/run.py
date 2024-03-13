@@ -44,14 +44,14 @@ class GameController(object):
         self.flashBG = False
         self.background = self.background_norm
 
-    def startGame(self):      
+    def startGame(self):
         self.mazedata.loadMaze(self.level)
         self.mazesprites = MazeSprites(self.mazedata.obj.name+".txt", self.mazedata.obj.name+"_rotation.txt")
         self.setBackground()
         self.nodes = NodeGroup(self.mazedata.obj.name+".txt")
         self.mazedata.obj.setPortalPairs(self.nodes)
         self.mazedata.obj.connectHomeNodes(self.nodes)
-        self.pacman = Pacman(self.nodes.getNodeFromTiles(*self.mazedata.obj.pacmanStart))
+        self.pacman = Pacman(self.nodes.getNodeFromTiles(*self.mazedata.obj.pacmanStart), self.nodes)
         self.pellets = PelletGroup(self.mazedata.obj.name+".txt")
         self.ghosts = GhostGroup(self.nodes.getStartTempNode(), self.pacman)
 
@@ -67,7 +67,7 @@ class GameController(object):
         self.ghosts.clyde.startNode.denyAccess(LEFT, self.ghosts.clyde)
         self.mazedata.obj.denyGhostsAccess(self.ghosts, self.nodes)
 
-    def startGame_old(self):      
+    def startGame_old(self):
         self.mazedata.loadMaze(self.level)#######
         self.mazesprites = MazeSprites("maze1.txt", "maze1_rotation.txt")
         self.setBackground()
@@ -96,14 +96,14 @@ class GameController(object):
         self.nodes.denyAccessList(12, 26, UP, self.ghosts)
         self.nodes.denyAccessList(15, 26, UP, self.ghosts)
 
-        
+
 
     def update(self):
-        dt = self.clock.tick(30) / 1000.0
+        dt = self.clock.tick(4) / 1000.0
         self.textgroup.update(dt)
         self.pellets.update(dt)
         if not self.pause.paused:
-            self.ghosts.update(dt)      
+            self.ghosts.update(dt)
             if self.fruit is not None:
                 self.fruit.update(dt)
             self.checkPelletEvents()
@@ -169,7 +169,7 @@ class GameController(object):
                 if ghost.mode.current is FREIGHT:
                     self.pacman.visible = False
                     ghost.visible = False
-                    self.updateScore(ghost.points)                  
+                    self.updateScore(ghost.points)
                     self.textgroup.addText(str(ghost.points), WHITE, ghost.position.x, ghost.position.y, 8, time=1)
                     self.ghosts.updatePoints()
                     self.pause.setPause(pauseTime=1, func=self.showEntities)
@@ -179,14 +179,14 @@ class GameController(object):
                     if self.pacman.alive:
                         self.lives -=  1
                         self.lifesprites.removeImage()
-                        self.pacman.die()               
+                        self.pacman.die()
                         self.ghosts.hide()
                         if self.lives <= 0:
                             self.textgroup.showText(GAMEOVERTXT)
                             self.pause.setPause(pauseTime=3, func=self.restartGame)
                         else:
                             self.pause.setPause(pauseTime=3, func=self.resetLevel)
-    
+
     def checkFruitEvents(self):
         if self.pellets.numEaten == 50 or self.pellets.numEaten == 140:
             if self.fruit is None:
