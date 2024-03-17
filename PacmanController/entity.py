@@ -10,7 +10,7 @@ class Entity(object):
         self.directions = {UP:Vector2(0, -1),DOWN:Vector2(0, 1),
                           LEFT:Vector2(-1, 0), RIGHT:Vector2(1, 0), STOP:Vector2()}
         self.direction = STOP
-        self.setSpeed(4)
+        self.setSpeed(100)
         self.radius = 10
         self.collideRadius = 5
         self.color = WHITE
@@ -30,9 +30,9 @@ class Entity(object):
         if self.overshotTarget():
             self.node = self.target
             directions = self.validDirections()
-            print('valid directions:', directions)
+            # print('valid directions:', directions)
             direction = self.directionMethod(directions)
-            print('direction:', direction)
+            # print('direction:', direction)
             self.target = self.getNewTarget(direction)
             if self.target is not self.node:
                 self.direction = direction

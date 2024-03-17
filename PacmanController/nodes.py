@@ -33,7 +33,7 @@ class NodeGroup(object):
     def __init__(self, level):
         self.level = level
         self.nodesLUT = {}
-        self.nodeSymbols = ['+', 'P', 'n']
+        self.nodeSymbols = ['+', 'P', 'n', '.']
         self.pathSymbols = ['.', '-', '|', 'p']
         data = self.readMazeFile(level)
         self.createNodeTable(data)
@@ -51,10 +51,13 @@ class NodeGroup(object):
                 if data[row][col] in self.nodeSymbols:
                     x, y = self.constructKey(col+xoffset, row+yoffset)
                     self.nodesLUT[(x, y)] = Node(x, y)
-
+  
     def constructKey(self, x, y):
         return x * TILEWIDTH, y * TILEHEIGHT
 
+    def addSingleNode(self, x, y, xoffset=0, yoffset=0):
+        x, y = self.constructKey(x+xoffset, y+yoffset)
+        self.nodesLUT[(x, y)] = Node(x, y)
 
     def connectHorizontally(self, data, xoffset=0, yoffset=0):
         for row in list(range(data.shape[0])):
@@ -205,10 +208,9 @@ class NodeGroup(object):
                 else:
                     temp_list.append(None)
             costs_dict[node] = temp_list
-        print(costs_dict)
+        # print(costs_dict)
         return costs_dict
     def getNearestNode(self, position):
-            print(f'getNearestNode:{position}')
             min_distance = float('inf')
             nearest_node = None
 
@@ -226,4 +228,5 @@ class NodeGroup(object):
                     min_distance = distance
                     nearest_node = self.nodesLUT[node_position]
 
+            print(f'getNearestNode:{nearest_node.position}')
             return nearest_node
