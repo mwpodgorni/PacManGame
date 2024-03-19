@@ -228,5 +228,5 @@ class NodeGroup(object):
                     min_distance = distance
                     nearest_node = self.nodesLUT[node_position]
 
-            print(f'getNearestNode:{nearest_node.position}')
+            # print(f'getNearestNode:{nearest_node.position}')
             return nearest_node

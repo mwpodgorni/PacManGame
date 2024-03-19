@@ -30,9 +30,7 @@ class Entity(object):
         if self.overshotTarget():
             self.node = self.target
             directions = self.validDirections()
-            # print('valid directions:', directions)
             direction = self.directionMethod(directions)
-            # print('direction:', direction)
             self.target = self.getNewTarget(direction)
             if self.target is not self.node:
                 self.direction = direction
@@ -49,6 +47,7 @@ class Entity(object):
         return False
 
     def getNewTarget(self, direction):
+        print('getNewTarget', direction)
         if self.validDirection(direction):
             return self.node.neighbors[direction]
         return self.node
