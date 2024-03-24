@@ -26,14 +26,14 @@ class Node(object):
                 line_start = self.position.asTuple()
                 line_end = self.neighbors[n].position.asTuple()
                 pygame.draw.line(screen, WHITE, line_start, line_end, 4)
-                pygame.draw.circle(screen, RED, self.position.asInt(), 8)
+                pygame.draw.circle(screen, RED, self.position.asInt(), 12)
 
 
 class NodeGroup(object):
-    def __init__(self, level, nodeSymbols):
+    def __init__(self, level):
         self.level = level
         self.nodesLUT = {}
-        self.nodeSymbols = nodeSymbols
+        self.nodeSymbols = ['+', 'P', 'n', "."]
         self.pathSymbols = ['.', '-', '|', 'p']
         data = self.readMazeFile(level)
         self.createNodeTable(data)
@@ -164,17 +164,25 @@ class NodeGroup(object):
         for node in self.nodesLUT.values():
             node.render(screen)
 
+    
+    
+    
+    #############################
+    # returns a list of all nodes in (x,y) format
+    def getListOfNodesVector(self):
+        return list(self.nodesLUT)
+
     # returns a node in (x,y) format
     def getVectorFromLUTNode(self, node):
         id = list(self.nodesLUT.values()).index(node)
         listOfVectors = self.getListOfNodesVector()
         return listOfVectors[id]
-    def getListOfNodesVector(self):
-        return list(self.nodesLUT)
-        # returns neighbors of a node in LUT form
+
+    # returns neighbors of a node in LUT form
     def getNeighborsObj(self, node):
         node_obj = self.getNodeFromPixels(node[0], node[1])
         return node_obj.neighbors
+
     # returns neighbors in (x,y) format
     def getNeighbors(self, node):
         neighs_LUT = self.getNeighborsObj(node)
@@ -187,6 +195,7 @@ class NodeGroup(object):
         for neigh in neighs_LUT2:
             list_neighs.append(self.getVectorFromLUTNode(neigh))
         return list_neighs
+
     # used to initialize node system for Dijkstra algorithm
     def get_nodes(self):
         costs_dict = {}
@@ -201,5 +210,5 @@ class NodeGroup(object):
                 else:
                     temp_list.append(None)
             costs_dict[node] = temp_list
-        # print(costs_dict)
+        print(costs_dict)
         return costs_dict

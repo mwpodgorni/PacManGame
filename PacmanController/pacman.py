@@ -72,29 +72,29 @@ class Pacman(Entity):
         # priority: 1 - seek ghost, 2 - run away, 3 - seek pellet
 
         # check seek ghost
-        # if any(ghost.mode.current == 2 for ghost in self.ghosts):
-        #     self.myState = SEEK_GHOST
-        #     self.directionMethod = self.goalDirectionDij
-        # else:
-        # # check nearest ghost position
-        #     smallest_distance = float('inf')
-        #     nearest_ghost = None
-        #     for ghost in self.ghosts:
-        #         # print('ghost position', ghost.position)
-        #         # print('pacman position', self.position)
-        #         distance = (ghost.position - self.position).magnitudeSquared()
-        #         if distance < smallest_distance:
-        #             smallest_distance = distance
-        #             nearest_ghost = ghost
-        #     # print('smallest_distance', smallest_distance)
-        #     # print('nearest_ghost', nearest_ghost)
-        #     if smallest_distance < 3500:
-        #         self.myState = RUN_AWAY
-        #         self.directionMethod = self.getRunAwayDirection
-        #         self.ghost = nearest_ghost
-        #     else:
-        self.myState = SEEK_PELLET
-        self.directionMethod = self.goalDirectionDij
+        if any(ghost.mode.current == 2 for ghost in self.ghosts):
+            self.myState = SEEK_GHOST
+            self.directionMethod = self.goalDirectionDij
+        else:
+        # check nearest ghost position
+            smallest_distance = float('inf')
+            nearest_ghost = None
+            for ghost in self.ghosts:
+                # print('ghost position', ghost.position)
+                # print('pacman position', self.position)
+                distance = (ghost.position - self.position).magnitudeSquared()
+                if distance < smallest_distance:
+                    smallest_distance = distance
+                    nearest_ghost = ghost
+            # print('smallest_distance', smallest_distance)
+            # print('nearest_ghost', nearest_ghost)
+            if smallest_distance < 3500:
+                self.myState = RUN_AWAY
+                self.directionMethod = self.getRunAwayDirection
+                self.ghost = nearest_ghost
+            else:
+                self.myState = SEEK_PELLET
+                self.directionMethod = self.goalDirectionDij
         #
 
     def updatePosition(self, dt):

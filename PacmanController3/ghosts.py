@@ -55,7 +55,7 @@ class Ghost(Entity):
         self.mode.setFreightMode()
         if self.mode.current == FREIGHT:
             self.setSpeed(50)
-            self.directionMethod = self.randomDirection
+            self.directionMethod = self.randomDirection         
 
     def normalMode(self):
         self.setSpeed(100)
@@ -129,6 +129,7 @@ class GhostGroup(object):
         self.inky = Inky(node, pacman, self.blinky)
         self.clyde = Clyde(node, pacman)
         self.ghosts = [self.blinky, self.pinky, self.inky, self.clyde]
+        # self.ghosts = [self.blinky, self.pinky]
 
     def __iter__(self):
         return iter(self.ghosts)

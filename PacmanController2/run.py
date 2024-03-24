@@ -50,13 +50,16 @@ class GameController(object):
         self.mazedata.loadMaze(self.level)
         self.mazesprites = MazeSprites(self.mazedata.obj.name+".txt", self.mazedata.obj.name+"_rotation.txt")
         self.setBackground()
-        self.nodes = NodeGroup(self.mazedata.obj.name+".txt")
+        self.nodes = NodeGroup(self.mazedata.obj.name+".txt",  ['+', 'P', 'n'])
         self.mazedata.obj.setPortalPairs(self.nodes)
         self.mazedata.obj.connectHomeNodes(self.nodes)
-        self.pacman = Pacman(self.nodes.getNodeFromTiles(*self.mazedata.obj.pacmanStart))
+        pelletNodes = NodeGroup(self.mazedata.obj.name+".txt",  ['+', 'P', 'n', '.'])
+
+        self.pacman = Pacman(self.nodes.getNodeFromTiles(*self.mazedata.obj.pacmanStart), self.nodes, pelletNodes)
         self.pellets = PelletGroup(self.mazedata.obj.name+".txt")
         self.ghosts = GhostGroup(self.nodes.getStartTempNode(), self.pacman)
-
+        # pass ghosts to pacman
+        self.pacman.getGhosts(self.ghosts)
         self.ghosts.pinky.setStartNode(self.nodes.getNodeFromTiles(*self.mazedata.obj.addOffset(2, 3)))
         self.ghosts.inky.setStartNode(self.nodes.getNodeFromTiles(*self.mazedata.obj.addOffset(0, 3)))
         self.ghosts.clyde.setStartNode(self.nodes.getNodeFromTiles(*self.mazedata.obj.addOffset(4, 3)))
@@ -223,7 +226,7 @@ class GameController(object):
         self.pellets.render(self.screen)
         if self.fruit is not None:
             self.fruit.render(self.screen)
-        self.nodes.render(self.screen)
+        # self.nodes.render(self.screen)
         self.pacman.render(self.screen)
         self.ghosts.render(self.screen)
         self.textgroup.render(self.screen)
