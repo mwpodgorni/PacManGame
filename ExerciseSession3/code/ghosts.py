@@ -46,8 +46,6 @@ class Ghost(Entity):
     # returned path
     def goalDirectionDij(self, directions):
         path = self.getDijkstraPath(directions)
-        print('goalDirectionDij',path)
-        print('target',self.target.position)
 
         ghostTarget = self.target
         ghostTarget = self.nodes.getVectorFromLUTNode(ghostTarget)

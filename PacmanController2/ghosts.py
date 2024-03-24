@@ -24,14 +24,13 @@ class Ghost(Entity):
         self.directionMethod = self.goalDirection
 
     def update(self, dt):
-        if False:
-            self.sprites.update(dt)
-            self.mode.update(dt)
-            if self.mode.current is SCATTER:
-                self.scatter()
-            elif self.mode.current is CHASE:
-                self.chase()
-            Entity.update(self, dt)
+        self.sprites.update(dt)
+        self.mode.update(dt)
+        if self.mode.current is SCATTER:
+            self.scatter()
+        elif self.mode.current is CHASE:
+            self.chase()
+        Entity.update(self, dt)
 
     def scatter(self):
         self.goal = Vector2()
@@ -56,7 +55,7 @@ class Ghost(Entity):
         self.mode.setFreightMode()
         if self.mode.current == FREIGHT:
             self.setSpeed(50)
-            self.directionMethod = self.randomDirection
+            self.directionMethod = self.randomDirection         
 
     def normalMode(self):
         self.setSpeed(100)
