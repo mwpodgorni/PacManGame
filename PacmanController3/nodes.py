@@ -210,5 +210,5 @@ class NodeGroup(object):
                 else:
                     temp_list.append(None)
             costs_dict[node] = temp_list
-        print(costs_dict)
+        # print(costs_dict)
         return costs_dict

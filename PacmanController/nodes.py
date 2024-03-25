@@ -214,19 +214,13 @@ class NodeGroup(object):
             min_distance = float('inf')
             nearest_node = None
 
-            # Convert position to tuple if it's a Vector2 object
             if isinstance(position, Vector2):
                 position = (position.x, position.y)
 
-            # Iterate through all nodes in the node group
             for node_position in self.nodesLUT.keys():
-                # Calculate the distance between the current node and the given position
                 distance = math.sqrt((position[0] - node_position[0])**2 + (position[1] - node_position[1])**2)
 
-                # Update the nearest node if this node is closer
                 if distance < min_distance:
                     min_distance = distance
                     nearest_node = self.nodesLUT[node_position]
-
-            # print(f'getNearestNode:{nearest_node.position}')
             return nearest_node
