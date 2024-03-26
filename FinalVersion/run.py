@@ -110,7 +110,7 @@ class GameController(object):
             if event.type == QUIT:
                 exit()
             elif event.type == KEYDOWN:
-                if event.key == K_SPACE:
+                if event.key == K_SPACE and self.flashBG is not True:
                     if self.pacman.alive:
                         self.pause.setPause(playerPaused=True)
                         if not self.pause.paused:

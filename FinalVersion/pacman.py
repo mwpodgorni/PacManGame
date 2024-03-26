@@ -1,12 +1,12 @@
 import pygame
 from pygame.locals import *
-from vector import Vector2
 from constants import *
 from entity import Entity
 from sprites import PacmanSprites
-from algorithms import dijkstra, print_result, dijkstra_or_a_star
+from algorithms import dijkstra_or_a_star
 from random import choice
 import random
+
 class Pacman(Entity):
     def __init__(self, node):
         Entity.__init__(self, node )
@@ -16,12 +16,23 @@ class Pacman(Entity):
         self.setBetweenNodes(LEFT)
         self.alive = True
         self.sprites = PacmanSprites(self)
+        # 
         # added fields
+        # 
+        # ghost reference
         self.ghosts = None
+        # direction method (changes based on state)
         self.directionMethod = self.goalDirection
+        # pellets left to collect
         self.leftoverPellets = []
+        # nodes reference
         self.nodes=None
+        # current pacman state
         self.myState=None
+        # if ghost is closer than specified distance, pacman will go into RUN_AWAY state
+        self.ghostTooCloseThreshold = 4500
+        # if freight ghost is closer than specified distance, pacman will go into SEEK_GHOST state
+        self.seekGhostThreshold = 3000
 
 
     def getGhosts(self, ghost):
@@ -42,17 +53,51 @@ class Pacman(Entity):
     def update(self, dt):	
         self.sprites.update(dt)
         self.position += self.directions[self.direction]*self.speed*dt
+
+        # update pacman's state
         self.updateState()
+        # update pacman's goal
+        self.updateGoal()
+        # update pacman's position
+        self.updatePosition()
+    
+    # update pacman state
+    # priority: RUN_AWAY > SEEK_GHOST > SEEK_PELLET
+    def updateState(self):
+        nearestDangerGhost = self.getNearestGhost([SCATTER, CHASE])
+        nearestDangerGhostDistance = (nearestDangerGhost.position - self.position).magnitudeSquared() if nearestDangerGhost is not None else self.ghostTooCloseThreshold+1
+        
+        nearestFreightenedGhost = self.getNearestGhost([FREIGHT])
+        nearestFreightenedGhostDistance = (nearestFreightenedGhost.position - self.position).magnitudeSquared() if nearestFreightenedGhost is not None else self.seekGhostThreshold+1
 
-
-        # if self.myState == SEEK_PELLET:
-            # print('state == seek pellet')
-            # self.seekPellet()
+        # update states in order based on current situation
+        if nearestDangerGhostDistance < self.ghostTooCloseThreshold:
+            if self.myState != RUN_AWAY:
+                print('state == run away')
+            self.myState = RUN_AWAY
+            self.directionMethod = self.getRunAwayDirection
+        elif nearestFreightenedGhostDistance < self.seekGhostThreshold:
+            if self.myState != SEEK_GHOST:
+                print('state == seek ghost')
+            self.myState = SEEK_GHOST
+            self.directionMethod = self.goalDirection
+        else:
+            if self.myState != SEEK_PELLET:
+                print('state == seek pellet')
+            self.myState = SEEK_PELLET
+            self.directionMethod = self.goalDirection
+    
+    # update goal based on current state
+    def updateGoal(self):
+        if self.myState == SEEK_PELLET:
+            self.goal = self.getNewNearestPellet()
         if self.myState == RUN_AWAY:
             self.goal = self.getNearestGhost([SCATTER, CHASE]).target.position
         if self.myState == SEEK_GHOST:
             self.goal = self.getNearestGhost([FREIGHT]).target
-
+    
+    # update pacman's position
+    def updatePosition(self):
         if self.overshotTarget():
             self.node = self.target
             directions = self.getValidDirections()
@@ -65,48 +110,23 @@ class Pacman(Entity):
             else:
                 self.target = self.getNewTarget(self.direction)
             self.setPosition()
-
+    
     def getValidDirections(self):
         directions = []
-        if self.myState in [RUN_AWAY, SEEK_GHOST]:
-            for key in [UP, DOWN, LEFT, RIGHT]:
-                if self.validDirection(key):
-                    directions.append(key)
-        else:
-            for key in [UP, DOWN, LEFT, RIGHT]:
-                if self.validDirection(key):
-                    if key != self.direction * -1:
-                        directions.append(key)
+        for key in [UP, DOWN, LEFT, RIGHT]:
+            if self.isValidDirection(key):
+                directions.append(key)
         if len(directions) == 0:
-            directions.append(self.direction * -1)
+            directions.append(self.direction)
         return directions
     
-    # SCATTER = 0
-    # CHASE = 1
-    # FREIGHT = 2
-    # SPAWN = 3
-    def updateState(self):
-        nearest_ghost = self.getNearestGhost([SCATTER, CHASE])
-        nearest_ghost2 = self.getNearestGhost([FREIGHT])
-
-        distance = (nearest_ghost.position - self.position).magnitudeSquared() if nearest_ghost is not None else 5000
-        distance2 = (nearest_ghost2.position - self.position).magnitudeSquared() if nearest_ghost2 is not None else 6000
-        if distance < 4000:
-            if self.myState!=RUN_AWAY:
-                print('change to run away')
-            self.myState = RUN_AWAY
-            self.directionMethod = self.getRunAwayDirection
-        elif distance2 < 5000:
-            if self.myState!=SEEK_GHOST:
-                print('change to seek ghosts')
-            self.myState = SEEK_GHOST
-            self.directionMethod = self.goalDirectionDij
-        else:
-            if self.myState!=SEEK_PELLET:
-                print('change to seek pellet')
-            self.myState = SEEK_PELLET
-            self.directionMethod = self.goalDirectionDij
-
+    def isValidDirection(self, direction):
+        if direction is not STOP:
+            if self.node.neighbors[direction] is not None:
+                return True
+        return False
+    
+    # get pellet that is closed to the current pacman position
     def getNewNearestPellet(self):
         nearest_pellet = None
         nearest_distance_squared = float('inf')
@@ -119,30 +139,20 @@ class Pacman(Entity):
                 nearest_pellet = pellet
         return nearest_pellet
     
+    # get direction towards which pacman should run away from a ghost
+    # slightly biased to running away to sides, rather than straight
     def getRunAwayDirection(self, directions):
         distances = []
-        if random.random() < 0.5:
+        if random.random() < 0.6:
             if self.direction in [LEFT, RIGHT]:
                 if UP in directions:
-                    if DOWN in directions:
-                        print('choice1')
-                        return choice([UP, DOWN])
-                    else:
-                        print('choice2')
-                        return UP
+                    return choice([UP, DOWN]) if DOWN in directions else UP
                 elif DOWN in directions:
-                    print('choice3')
                     return DOWN
             elif self.direction in [UP, DOWN]:
                 if LEFT in directions:
-                    if RIGHT in directions:
-                        print('choice4')
-                        return choice([LEFT, RIGHT])
-                    else:
-                        print('choice5')
-                        return LEFT
+                    return choice([LEFT, RIGHT]) if RIGHT in directions else LEFT
                 elif RIGHT in directions:
-                    print('choice6')
                     return RIGHT
         for direction in directions:
             vec = self.node.position  + self.directions[direction]*TILEWIDTH - self.goal
@@ -150,14 +160,7 @@ class Pacman(Entity):
         index = distances.index(max(distances))
         return directions[index]
     
-    def goalDirection(self, directions):
-        distances = []
-        for direction in directions:
-            vec = self.node.position  + self.directions[direction]*TILEWIDTH - self.goal
-            distances.append(vec.magnitudeSquared())
-        index = distances.index(max(distances))
-        return directions[index]
-    
+    # get nearest ghost with one of the provided states
     def getNearestGhost(self, states):
         smallest_distance = float('inf')
         nearest_ghost = None
@@ -186,16 +189,15 @@ class Pacman(Entity):
             return True
         return False
 
-    # Chooses direction in which to turn based on the dijkstra
-    # returned path
-    def goalDirectionDij(self, directions):
-        path = self.getDijkstraPath(directions)
-
+    # Chooses direction in which to turn based on the a*
+    def goalDirection(self, directions):
+        path = self.getAStarPath()
         ghostTarget = self.target
         ghostTarget = self.nodes.getVectorFromLUTNode(ghostTarget)
         path.append(ghostTarget)
+        if len(path) == 1:
+            return choice(directions)
         nextGhostNode = path[1]
-        # print(directions)
         if ghostTarget[0] > nextGhostNode[0] and 2 in directions : #left
             return 2
         if ghostTarget[0] < nextGhostNode[0] and -2 in directions : #right
@@ -205,34 +207,26 @@ class Pacman(Entity):
         if ghostTarget[1] < nextGhostNode[1] and -1 in directions : #down
             return -1
         else:
-            print('dijskstra else',directions)
-            # if -1 * self.pacman.direction in directions:
-            #     return -1 * self.pacman.direction
-            # else:
             return choice(directions)
-        # up 1, down -1, left 2, right -2
-
 
     #############
-    # Executes Dijkstra from Ghost's previous node as start
-    # to pacman's target node as target.
-    def getDijkstraPath(self, directions):
-        pellet = self.getNewNearestPellet() if self.myState == SEEK_PELLET else self.goal
-        lastPacmanNode = (pellet.position.x, pellet.position.y)
-        ghostTarget = self.target
-        ghostTarget = self.nodes.getVectorFromLUTNode(ghostTarget)
+    # Executes A* from pacman's previous node as start to pacman's goal.
+    def getAStarPath(self):
+        if self.goal is None:
+            return []
+        lastPacmanNode = (self.goal.position.x, self.goal.position.y)
+        pacmanTarget = self.target
+        pacmanTarget = self.nodes.getVectorFromLUTNode(pacmanTarget)
 
-        # previous_nodes, shortest_path = dijkstra(self.nodes, ghostTarget)
-        previous_nodes, shortest_path = dijkstra_or_a_star(self.nodes, ghostTarget, a_star=True)
+        previous_nodes, shortest_path = dijkstra_or_a_star(self.nodes, pacmanTarget, a_star=True)
         path = []
         node = lastPacmanNode
-        while node != ghostTarget:
+        while node != pacmanTarget:
             path.append(node)
             if node in previous_nodes:
                 node = previous_nodes[node]
             else:
                 break
-        path.append(ghostTarget)
+        path.append(pacmanTarget)
         path.reverse()
-        # print(path)
         return path
