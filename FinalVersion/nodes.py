@@ -25,8 +25,8 @@ class Node(object):
             if self.neighbors[n] is not None:
                 line_start = self.position.asTuple()
                 line_end = self.neighbors[n].position.asTuple()
-                pygame.draw.line(screen, WHITE, line_start, line_end, 4)
-                pygame.draw.circle(screen, RED, self.position.asInt(), 12)
+                pygame.draw.line(screen, WHITE, line_start, line_end, 2)
+                pygame.draw.circle(screen, RED, self.position.asInt(), 6)
 
 
 class NodeGroup(object):
@@ -34,7 +34,7 @@ class NodeGroup(object):
         self.level = level
         self.nodesLUT = {}
         self.nodeSymbols = ['+', 'P', 'n', "."]
-        self.pathSymbols = ['.', '-', '|', 'p']
+        self.pathSymbols = [".", '-', '|', 'p']
         data = self.readMazeFile(level)
         self.createNodeTable(data)
         self.connectHorizontally(data)

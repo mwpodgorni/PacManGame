@@ -21,16 +21,16 @@ class Pacman(Entity):
         # 
         # ghost reference
         self.ghosts = None
-        # direction method (changes based on state)
-        self.directionMethod = self.goalDirection
-        # pellets left to collect
-        self.leftoverPellets = []
         # nodes reference
         self.nodes=None
         # current pacman state
         self.myState=None
+        # direction method (changes based on state)
+        self.directionMethod = self.goalDirection
+        # pellets left to collect
+        self.leftoverPellets = []
         # if ghost is closer than specified distance, pacman will go into RUN_AWAY state
-        self.ghostTooCloseThreshold = 4500
+        self.ghostTooCloseThreshold = 5000
         # if freight ghost is closer than specified distance, pacman will go into SEEK_GHOST state
         self.seekGhostThreshold = 3000
 
@@ -65,25 +65,21 @@ class Pacman(Entity):
     # priority: RUN_AWAY > SEEK_GHOST > SEEK_PELLET
     def updateState(self):
         nearestDangerGhost = self.getNearestGhost([SCATTER, CHASE])
+        # if ghost found, get distance, if not set it to threshold +1
         nearestDangerGhostDistance = (nearestDangerGhost.position - self.position).magnitudeSquared() if nearestDangerGhost is not None else self.ghostTooCloseThreshold+1
         
         nearestFreightenedGhost = self.getNearestGhost([FREIGHT])
+        # if ghost found, get distance, if not set it to threshold +1
         nearestFreightenedGhostDistance = (nearestFreightenedGhost.position - self.position).magnitudeSquared() if nearestFreightenedGhost is not None else self.seekGhostThreshold+1
 
         # update states in order based on current situation
         if nearestDangerGhostDistance < self.ghostTooCloseThreshold:
-            if self.myState != RUN_AWAY:
-                print('state == run away')
             self.myState = RUN_AWAY
             self.directionMethod = self.getRunAwayDirection
         elif nearestFreightenedGhostDistance < self.seekGhostThreshold:
-            if self.myState != SEEK_GHOST:
-                print('state == seek ghost')
             self.myState = SEEK_GHOST
             self.directionMethod = self.goalDirection
         else:
-            if self.myState != SEEK_PELLET:
-                print('state == seek pellet')
             self.myState = SEEK_PELLET
             self.directionMethod = self.goalDirection
     
@@ -94,7 +90,7 @@ class Pacman(Entity):
         if self.myState == RUN_AWAY:
             self.goal = self.getNearestGhost([SCATTER, CHASE]).target.position
         if self.myState == SEEK_GHOST:
-            self.goal = self.getNearestGhost([FREIGHT]).target
+            self.goal = self.getNearestGhost([FREIGHT]).target.position
     
     # update pacman's position
     def updatePosition(self):
@@ -137,7 +133,7 @@ class Pacman(Entity):
             if distance_squared < nearest_distance_squared:
                 nearest_distance_squared = distance_squared
                 nearest_pellet = pellet
-        return nearest_pellet
+        return nearest_pellet.position
     
     # get direction towards which pacman should run away from a ghost
     # slightly biased to running away to sides, rather than straight
@@ -210,11 +206,11 @@ class Pacman(Entity):
             return choice(directions)
 
     #############
-    # Executes A* from pacman's previous node as start to pacman's goal.
+    # Executes A* from pacman's target as start to pacman's goal.
     def getAStarPath(self):
         if self.goal is None:
             return []
-        lastPacmanNode = (self.goal.position.x, self.goal.position.y)
+        lastPacmanNode = (self.goal.x, self.goal.y)
         pacmanTarget = self.target
         pacmanTarget = self.nodes.getVectorFromLUTNode(pacmanTarget)
 
