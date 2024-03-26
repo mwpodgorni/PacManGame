@@ -192,19 +192,19 @@ class Pacman(Entity):
     # Chooses direction in which to turn based on the a*
     def goalDirection(self, directions):
         path = self.getAStarPath()
-        ghostTarget = self.target
-        ghostTarget = self.nodes.getVectorFromLUTNode(ghostTarget)
-        path.append(ghostTarget)
+        pacmanTarget = self.target
+        pacmanTarget = self.nodes.getVectorFromLUTNode(pacmanTarget)
+        path.append(pacmanTarget)
         if len(path) == 1:
             return choice(directions)
-        nextGhostNode = path[1]
-        if ghostTarget[0] > nextGhostNode[0] and 2 in directions : #left
+        nextPacmanNode = path[1]
+        if pacmanTarget[0] > nextPacmanNode[0] and 2 in directions : #left
             return 2
-        if ghostTarget[0] < nextGhostNode[0] and -2 in directions : #right
+        if pacmanTarget[0] < nextPacmanNode[0] and -2 in directions : #right
             return -2
-        if ghostTarget[1] > nextGhostNode[1] and 1 in directions : #up
+        if pacmanTarget[1] > nextPacmanNode[1] and 1 in directions : #up
             return 1
-        if ghostTarget[1] < nextGhostNode[1] and -1 in directions : #down
+        if pacmanTarget[1] < nextPacmanNode[1] and -1 in directions : #down
             return -1
         else:
             return choice(directions)
